@@ -32,8 +32,21 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%}
+    /* Prevent iOS 'white flash' when rubber-band scrolling past edges */
+    html{background:#0b1020;}
+    body{background:#0b1020;}
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background: linear-gradient(180deg, #0b1020, var(--bg));
+      z-index:-1;
+      pointer-events:none;
+    }
+
     body{
       margin:0;
+      overscroll-behavior: none;
       font-family:var(--sans);
       background: linear-gradient(180deg, #0b1020, var(--bg));
       color:var(--text);
