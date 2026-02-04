@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>IV Personal Tips (Viewer)</title>
+
+  <!-- iOS Home Screen icon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+  <!-- iOS app-style behavior -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="IV Tips">
+
+  <!-- Browser theme color -->
+  <meta name="theme-color" content="#0f172a">
+  <style>
+    :root{
+      --bg:#0f172a;
+      --card:#111c33;
+      --card2:#0b1326;
+      --text:#e6eefc;
+      --muted:#a9b7d6;
+      --line:rgba(255,255,255,.12);
+      --accent:#2f79d7;
+      --accent2:#1c63bf;
+      --radius:14px;
+      --shadow: 0 18px 40px rgba(0,0,0,.35);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: linear-gradient(180deg, #0b1020, var(--bg));
+      color:var(--text);
+      padding: calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
+    }
+
+    .app{
+      max-width: 980px;
+      margin: 0 auto;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .topbar{
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    }
+    .brandRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:900;
+      letter-spacing:.2px;
+      font-size:18px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background: linear-gradient(180deg, #8ec5ff, var(--accent));
+      box-shadow: 0 10px 18px rgba(47,121,215,.25);
+      flex:0 0 auto;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight:800;
+      cursor:pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{
+      border-color: rgba(47,121,215,.55);
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    .search{
+      display:flex; align-items:center; gap:10px;
+      border:1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,.18);
+    }
+    .search svg{opacity:.85; flex:0 0 auto}
+    .search input{
+      width:100%;
+      border:0; outline:none;
+      background:transparent;
+      color:var(--text);
+      font-size:16px;
+    }
+
+    .filters{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    select{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      font-weight:800;
+      font-size:15px;
+      outline:none;
+      appearance:none;
+      -webkit-appearance:none;
+    }
+
+    .main{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+      padding: 12px;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.20));
+      overflow:hidden;
+    }
+    .cardHead{
+      padding: 12px 12px 10px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    }
+    .cardHead .title{
+      font-weight:900;
+      font-size:14px;
+      color: var(--muted);
+      letter-spacing:.2px;
+    }
+    .meta{
+      font-size:12px;
+      color: var(--muted);
+      opacity:.95;
+    }
+
+    .list{
+      max-height: 42vh;
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .item{
+      padding: 12px 12px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      cursor:pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .item:first-child{border-top:0}
+    .item .t{
+      font-weight:900;
+      font-size:16px;
+      margin-bottom:4px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .item .s{
+      font-size:12px;
+      color: var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .item.active{
+      background: linear-gradient(180deg, rgba(47,121,215,.28), rgba(47,121,215,.10));
+      border-top-color: rgba(47,121,215,.25);
+    }
+
+    .viewer{
+      padding: 12px;
+    }
+    .viewer h1{
+      font-size:22px;
+      margin: 0 0 6px;
+      line-height:1.2;
+    }
+    .pills{display:flex; gap:8px; flex-wrap:wrap; margin: 8px 0 12px}
+    .pill{
+      font-size:12px;
+      font-weight:900;
+      padding: 6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+    }
+    .pill.blue{
+      border-color: rgba(47,121,215,.55);
+      background: rgba(47,121,215,.20);
+    }
+    .body{
+      border-top:1px solid var(--line);
+      padding-top:12px;
+      font-family: var(--mono);
+      font-size:13px;
+      line-height:1.55;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+
+    .bottomRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      padding: 12px;
+      border-top:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.18));
+    }
+    .note{
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    /* Simple modal (iOS friendly) */
+    .backdrop{
+      position:fixed; inset:0;
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding: 16px;
+      background: rgba(0,0,0,.55);
+      z-index:9999;
+    }
+    .backdrop.show{display:flex;}
+    .sheet{
+      width:min(640px, 100%);
+      border-radius: 18px;
+      border:1px solid var(--line);
+      overflow:hidden;
+      background: linear-gradient(180deg, rgba(17,28,51,.98), rgba(8,14,28,.98));
+      box-shadow: 0 22px 60px rgba(0,0,0,.45);
+    }
+    .sheetHead{
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--line);
+    }
+    .sheetHead b{letter-spacing:.2px}
+    .sheetBody{padding: 12px 14px; display:grid; gap:10px;}
+    .field label{
+      display:block;
+      font-size:12px;
+      color: var(--muted);
+      font-weight:900;
+      margin: 0 0 6px 2px;
+    }
+    .field input{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      font-weight:700;
+      font-size:14px;
+      outline:none;
+    }
+    .sheetFoot{
+      padding: 12px 14px;
+      border-top:1px solid var(--line);
+      display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
+    }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      *{scroll-behavior:auto}
+      .btn:active{transform:none}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app" role="application">
+    <div class="topbar">
+      <div class="brandRow">
+        <div class="brand"><span class="dot"></span>IV Personal Tips</div>
+        <button class="btn" id="syncOpenBtn" type="button">Sync</button>
+      </div>
+
+      <div class="controls">
+        <div class="search" title="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2" opacity=".95"/>
+            <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+          </svg>
+          <input id="q" type="search" inputmode="search" placeholder="Search tips…" />
+        </div>
+
+        <div class="filters">
+          <select id="category">
+            <option value="">All categories</option>
+          </select>
+          <select id="sort">
+            <option value="pinned_recent">Pinned / Recent</option>
+            <option value="title">Title</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <div class="cardHead">
+          <div class="title">Tips</div>
+          <div class="meta" id="countMeta">0</div>
+        </div>
+        <div class="list" id="list"></div>
+        <div class="note" id="listHint">
+          Tip: Use <b>Sync</b> to load from your Google Sheet. This viewer is read‑only (no editing).
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cardHead">
+          <div class="title">Viewer</div>
+          <div class="meta" id="viewMeta">—</div>
+        </div>
+        <div class="viewer" id="viewer">
+          <h1 id="viewTitle">Select a tip</h1>
+          <div class="pills" id="pills"></div>
+          <div class="body" id="viewBody">Nothing selected.</div>
+        </div>
+        <div class="bottomRow">
+          <button class="btn" id="copyBtn" type="button" disabled>Copy</button>
+          <button class="btn primary" id="refreshBtn" type="button">Refresh</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sync Sheet -->
+  <div class="backdrop" id="syncBackdrop" aria-hidden="true">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="Sync settings">
+      <div class="sheetHead">
+        <b>Google Sheets Sync (Read Only)</b>
+        <button class="btn" id="syncCloseBtn" type="button">Close</button>
+      </div>
+      <div class="sheetBody">
+        <div class="field">
+          <label for="syncSheetId">Sheet ID</label>
+          <input id="syncSheetId" type="text" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="syncSheetName">Tab name</label>
+          <input id="syncSheetName" type="text" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="syncApiUrl">Apps Script Web App URL</label>
+          <input id="syncApiUrl" type="text" autocomplete="off" />
+        </div>
+        <div class="note">
+          This uses <b>JSONP read</b> (script tag) so it works in iOS Safari, even from a local HTML file.
+        </div>
+      </div>
+      <div class="sheetFoot">
+        <button class="btn" id="syncSaveBtn" type="button">Save</button>
+        <button class="btn primary" id="syncLoadBtn" type="button">Load Now</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // ------------------------------------------------------------
+  // iOS-friendly, READ-ONLY viewer build (no edit/new/delete/export)
+  // ------------------------------------------------------------
+
+  const STORAGE_KEY = "my_tips_windows_theme_v3"; // keep same key so your existing tips still appear
+  const PREF_KEY = "my_tips_ios_viewer_prefs_v1";
+
+  // Defaults (from your desktop build)
+  const DEFAULT_SHEET_ID = "1_JzG34eJhz8vzTMER4JYTh55hdyRPfbtAXWbsMHF2b8";
+  const DEFAULT_SHEET_NAME = "Tips";
+  const DEFAULT_API_URL  = "https://script.google.com/macros/s/AKfycbxkVIEFWHFUf32Rgk5cc50BH2cnA5j_17jYIY1JRUFEp-E3xDiHHI1wE2d8dj19vlmi/exec";
+
+  const el = (id) => document.getElementById(id);
+
+  const q = el("q");
+  const category = el("category");
+  const sort = el("sort");
+  const list = el("list");
+  const countMeta = el("countMeta");
+  const viewTitle = el("viewTitle");
+  const viewMeta = el("viewMeta");
+  const viewBody = el("viewBody");
+  const pills = el("pills");
+  const copyBtn = el("copyBtn");
+  const refreshBtn = el("refreshBtn");
+
+  // Sync UI
+  const syncOpenBtn = el("syncOpenBtn");
+  const syncBackdrop = el("syncBackdrop");
+  const syncCloseBtn = el("syncCloseBtn");
+  const syncSaveBtn = el("syncSaveBtn");
+  const syncLoadBtn = el("syncLoadBtn");
+  const syncSheetId = el("syncSheetId");
+  const syncSheetName = el("syncSheetName");
+  const syncApiUrl = el("syncApiUrl");
+
+  let tips = loadTips();
+  let activeId = null;
+
+  function safeText(s){ return (s ?? "").toString(); }
+  function normalizeTags(str){
+    const s = Array.isArray(str) ? str.join(",") : (str ?? "");
+    return String(s).split(",").map(x => x.trim()).filter(Boolean)
+      .filter((v,i,a)=>a.indexOf(v)===i);
+  }
+  function nowISO(){ return new Date().toISOString(); }
+
+  function loadTips(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return [];
+      const data = JSON.parse(raw);
+      if(!Array.isArray(data)) return [];
+      return data.map(t => ({
+        id: t.id || (Math.random().toString(16).slice(2) + Date.now().toString(16)),
+        title: safeText(t.title),
+        tags: Array.isArray(t.tags) ? t.tags : normalizeTags(t.tags),
+        body: safeText(t.body),
+        banner: safeText(t.banner),
+        createdAt: t.createdAt || nowISO(),
+        updatedAt: t.updatedAt || nowISO(),
+        starred: !!t.starred,
+        pinned: !!t.pinned
+      }));
+    }catch(_){ return []; }
+  }
+  function saveTips(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tips));
+  }
+
+  function loadPrefs(){
+    try{ return JSON.parse(localStorage.getItem(PREF_KEY) || "{}"); }
+    catch(_){ return {}; }
+  }
+  function savePrefs(p){
+    localStorage.setItem(PREF_KEY, JSON.stringify(p||{}));
+  }
+  function syncCfg(){
+    const p = loadPrefs();
+    return {
+      sheetId: (p.sheetId || DEFAULT_SHEET_ID).trim(),
+      sheetName: (p.sheetName || DEFAULT_SHEET_NAME).trim() || DEFAULT_SHEET_NAME,
+      apiUrl: (p.apiUrl || DEFAULT_API_URL).trim()
+    };
+  }
+
+  function formatDate(iso){
+    try{
+      const d = new Date(iso);
+      return d.toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }catch(_){ return iso || ""; }
+  }
+  function timeAgo(iso){
+    try{
+      const t = new Date(iso).getTime();
+      const s = Math.floor((Date.now()-t)/1000);
+      const m = Math.floor(s/60);
+      const h = Math.floor(m/60);
+      const d = Math.floor(h/24);
+      if(s<10) return "just now";
+      if(s<60) return s + "s ago";
+      if(m<60) return m + " min ago";
+      if(h<24) return h + " hours ago";
+      if(d<7) return d + " days ago";
+      return formatDate(iso);
+    }catch(_){ return iso || ""; }
+  }
+
+  function allCategories(){
+    const set = new Set();
+    tips.forEach(t => (t.tags||[]).forEach(tag => set.add(tag)));
+    return Array.from(set).sort((a,b)=>a.localeCompare(b, undefined, {sensitivity:"base"}));
+  }
+
+  function sortedTips(arr){
+    const a = arr.slice();
+    const mode = sort.value || "pinned_recent";
+    if(mode === "title"){
+      a.sort((x,y)=>(x.title||"").localeCompare((y.title||""), undefined, {sensitivity:"base"}));
+      return a;
+    }
+    a.sort((x,y)=>{
+      if(!!y.pinned!==!!x.pinned) return (y.pinned?1:0)-(x.pinned?1:0);
+      if(!!y.starred!==!!x.starred) return (y.starred?1:0)-(x.starred?1:0);
+      return new Date(y.updatedAt).getTime() - new Date(x.updatedAt).getTime();
+    });
+    return a;
+  }
+
+  function tipMatches(t, query, cat){
+    const q = (query||"").trim().toLowerCase();
+    const catOk = !cat || (t.tags||[]).some(x => x.toLowerCase() === cat.toLowerCase());
+    if(!catOk) return false;
+    if(!q) return true;
+    const hay = [t.title, (t.tags||[]).join(" "), t.body, t.banner].join(" ").toLowerCase();
+    return hay.indexOf(q) !== -1;
+  }
+
+  function renderCategory(){
+    const cats = allCategories();
+    const cur = category.value || "";
+    let html = '<option value="">All categories</option>';
+    cats.forEach(c => {
+      html += '<option value="' + escapeAttr(c) + '">' + escapeHtml(c) + '</option>';
+    });
+    category.innerHTML = html;
+    // preserve selection if still exists
+    if(cur && cats.indexOf(cur) !== -1) category.value = cur;
+  }
+
+  function renderList(){
+    renderCategory();
+    const filtered = sortedTips(tips.filter(t => tipMatches(t, q.value, category.value)));
+    countMeta.textContent = filtered.length + (filtered.length === 1 ? " tip" : " tips");
+
+    if(filtered.length === 0){
+      list.innerHTML = '<div class="note">No matches.</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(t => {
+      const active = (t.id === activeId) ? "active" : "";
+      const badge = t.pinned ? "📌" : (t.starred ? "⭐" : "🗂️");
+      const subtitle = ((t.tags||[]).slice(0,2).join(", ") || "No tags") + " • " + timeAgo(t.updatedAt);
+      return (
+        '<div class="item '+active+'" data-id="'+escapeAttr(t.id)+'">' +
+          '<div class="t">'+ escapeHtml(badge + " " + (t.title||"(Untitled)")) +'</div>' +
+          '<div class="s">'+ escapeHtml(subtitle) +'</div>' +
+        '</div>'
+      );
+    }).join("");
+
+    Array.prototype.forEach.call(list.querySelectorAll("[data-id]"), (node)=>{
+      node.addEventListener("click", ()=>{
+        const id = node.getAttribute("data-id");
+        showTip(id);
+      }, { passive:true });
+    });
+  }
+
+  function showTip(id){
+    const t = tips.find(x => x.id === id);
+    if(!t) return;
+    activeId = id;
+
+    viewTitle.textContent = t.title || "(Untitled)";
+    viewMeta.textContent = "Updated " + timeAgo(t.updatedAt) + " • " + formatDate(t.updatedAt);
+
+    const p = [];
+    if(t.pinned) p.push('<span class="pill blue">📌 Pinned</span>');
+    if(t.starred) p.push('<span class="pill">⭐ Starred</span>');
+    if((t.banner||"").trim()) p.push('<span class="pill">Tip: ' + escapeHtml(t.banner.trim()) + '</span>');
+    (t.tags||[]).forEach(tag => p.push('<span class="pill">🏷️ ' + escapeHtml(tag) + '</span>'));
+    pills.innerHTML = p.join("");
+
+    viewBody.textContent = t.body || "";
+    copyBtn.disabled = false;
+    renderList();
+  }
+
+  async function copyCurrent(){
+    const t = tips.find(x => x.id === activeId);
+    if(!t) return;
+    const text = ("# " + (t.title||"Untitled") + "\n" +
+      "Tags: " + ((t.tags||[]).join(", ") || "none") + "\n\n" +
+      (t.body||"") + "\n\n" +
+      ((t.banner||"") ? ("Tip: " + t.banner) : "")
+    ).trim();
+
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        await navigator.clipboard.writeText(text);
+        flash("Copied");
+      }else{
+        // iOS fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.focus(); ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        flash("Copied");
+      }
+    }catch(_){
+      flash("Copy failed");
+    }
+  }
+
+  // Tiny toast (no animation-heavy stuff)
+  let toastTimer = null;
+  function flash(msg){
+    clearTimeout(toastTimer);
+    viewMeta.textContent = msg;
+    toastTimer = setTimeout(()=>{
+      const t = tips.find(x => x.id === activeId);
+      viewMeta.textContent = t ? ("Updated " + timeAgo(t.updatedAt) + " • " + formatDate(t.updatedAt)) : "—";
+    }, 900);
+  }
+
+  function escapeHtml(str){
+    return String(str ?? "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+  }
+  function escapeAttr(str){
+    return escapeHtml(str).replace(/\s/g, " ");
+  }
+
+  // JSONP loader (works from local file + iOS Safari)
+  function jsonp(url, timeoutMs){
+    return new Promise((resolve, reject)=>{
+      const cb = "__jsonp_cb_" + Math.random().toString(36).slice(2);
+      const s = document.createElement("script");
+      const t = setTimeout(()=>{
+        cleanup();
+        reject(new Error("JSONP timeout"));
+      }, timeoutMs || 12000);
+
+      function cleanup(){
+        clearTimeout(t);
+        try{ delete window[cb]; }catch(_){ window[cb]=undefined; }
+        if(s.parentNode) s.parentNode.removeChild(s);
+      }
+      window[cb] = (data)=>{ cleanup(); resolve(data); };
+
+      try{
+        const u = new URL(url);
+        u.searchParams.set("callback", cb);
+        s.src = u.toString();
+      }catch(_){
+        cleanup();
+        reject(new Error("Bad URL"));
+        return;
+      }
+      s.onerror = ()=>{ cleanup(); reject(new Error("JSONP failed")); };
+      document.head.appendChild(s);
+    });
+  }
+
+  function rowsToTips(arr){
+    const toBool = (v) => String(v||"").toLowerCase()==="true" || String(v||"")==="1" || String(v||"").toLowerCase()==="yes";
+    return (arr||[]).map(r => ({
+      id: (r.id || (Math.random().toString(16).slice(2) + Date.now().toString(16))).toString(),
+      title: safeText(r.title),
+      tags: normalizeTags(r.tags),
+      body: safeText(r.body),
+      banner: safeText(r.banner),
+      createdAt: r.createdAt || nowISO(),
+      updatedAt: r.updatedAt || nowISO(),
+      starred: toBool(r.starred),
+      pinned: toBool(r.pinned)
+    }));
+  }
+
+  async function loadFromSheet(silent){
+    const cfg = syncCfg();
+    if(!cfg.apiUrl || !cfg.sheetId){
+      if(!silent){ flash("Set Sync first"); openSync(); }
+      return;
+    }
+    try{
+      if(!silent) flash("Loading…");
+      const u = new URL(cfg.apiUrl);
+      u.searchParams.set("action","read");
+      u.searchParams.set("sheetId", cfg.sheetId);
+      u.searchParams.set("sheetName", cfg.sheetName || DEFAULT_SHEET_NAME);
+
+      const res = await jsonp(u.toString(), 14000);
+      if(!res || !res.ok) throw new Error(res && res.error ? res.error : "Load failed");
+
+      tips = rowsToTips(res.tips || []);
+      saveTips();
+      activeId = null;
+      renderList();
+      viewTitle.textContent = "Select a tip";
+      viewBody.textContent = tips.length ? "Loaded. Tap a tip to view it." : "No tips found in the sheet.";
+      pills.innerHTML = "";
+      copyBtn.disabled = true;
+      if(!silent) flash("Loaded");
+    }catch(e){
+      if(!silent) flash("Load failed");
+      viewBody.textContent = "Load from Sheet failed. Check Sync settings (Sheet ID, Tab name, API URL).";
+    }
+  }
+
+  function openSync(){
+    const cfg = syncCfg();
+    syncSheetId.value = cfg.sheetId;
+    syncSheetName.value = cfg.sheetName;
+    syncApiUrl.value = cfg.apiUrl;
+    syncBackdrop.classList.add("show");
+    syncBackdrop.setAttribute("aria-hidden","false");
+  }
+  function closeSync(){
+    syncBackdrop.classList.remove("show");
+    syncBackdrop.setAttribute("aria-hidden","true");
+  }
+  function saveSync(){
+    const p = loadPrefs();
+    p.sheetId = (syncSheetId.value || "").trim();
+    p.sheetName = (syncSheetName.value || "").trim();
+    p.apiUrl = (syncApiUrl.value || "").trim();
+    savePrefs(p);
+    flash("Saved");
+  }
+
+  // Events
+  q.addEventListener("input", renderList, { passive:true });
+  category.addEventListener("change", renderList, { passive:true });
+  sort.addEventListener("change", renderList, { passive:true });
+
+  copyBtn.addEventListener("click", copyCurrent);
+  refreshBtn.addEventListener("click", loadFromSheet);
+
+  // iOS Safari sometimes misses click on small header buttons; bind both click + touch.
+  const bindTap = (node, fn) => {
+    if(!node) return;
+    node.addEventListener("click", fn, {passive:true});
+    node.addEventListener("touchend", (e)=>{ e.preventDefault(); fn(e); }, {passive:false});
+    node.addEventListener("pointerup", fn, {passive:true});
+  };
+
+  bindTap(syncOpenBtn, openSync);
+  bindTap(syncCloseBtn, closeSync);
+  syncBackdrop.addEventListener("click", (e)=>{ if(e.target === syncBackdrop) closeSync(); });
+  syncSaveBtn.addEventListener("click", saveSync);
+  syncLoadBtn.addEventListener("click", async ()=>{ saveSync(); await loadFromSheet(); closeSync(); });
+
+  // Boot
+  renderList();
+// Auto-sync on open (read-only) if we have Sheet settings saved (or defaults).
+// This keeps the phone viewer up-to-date without needing to tap Sync each time.
+(async () => {
+  try{
+    const raw = localStorage.getItem(PREF_KEY);
+    // If prefs exist OR defaults are present, attempt a silent sync.
+    if(raw !== null || (DEFAULT_API_URL && DEFAULT_SHEET_ID)){
+      await loadFromSheet(true); // silent
+    }
+  }catch(_){}
+})();
+  if(tips.length){
+    viewBody.textContent = "Tap a tip on the left to view it.";
+  }else{
+    viewBody.textContent = "No local tips found. Tap Refresh to load from your Google Sheet.";
+  }
+})();
+</script>
+</body>
+</html>
